@@ -51,7 +51,7 @@ int main(int argc, char **argv)
     clock_gettime(CLOCK_REALTIME, &start);
     (*transpose)(src, out0, TEST_W, TEST_H);
     clock_gettime(CLOCK_REALTIME, &end);
-    printf("Execute time: \t\t %ld us\n", diff_in_us(start, end));
+    printf("%ld\n", diff_in_us(start, end));
     free(src);
     free(out0);
 
