@@ -29,32 +29,29 @@ static long diff_in_us(struct timespec t1, struct timespec t2)
     return (diff.tv_sec * 1000000.0 + diff.tv_nsec / 1000.0);
 }
 
-int main()
+int main(int argc, char **argv)
 {
     struct timespec start, end;
     int *src  = (int *) malloc(sizeof(int) * TEST_W * TEST_H);
     int *out0 = (int *) malloc(sizeof(int) * TEST_W * TEST_H);
+    void (*transpose)(int *src, int *dst, int w, int h);
 
     srand(time(NULL));
     for (int y = 0; y < TEST_H; y++)
         for (int x = 0; x < TEST_W; x++)
             *(src + y * TEST_W + x) = rand();
-#if defined SSE_PF
+
+    if (argc > 1 && strcmp(argv[1], "SSE_PF") == 0)
+        transpose = &sse_prefetch_transpose;
+    else if (argc > 1 && strcmp(argv[1], "SSE") == 0)
+        transpose = &sse_transpose;
+    else
+        transpose = &naive_transpose;
+
     clock_gettime(CLOCK_REALTIME, &start);
-    sse_prefetch_transpose(src, out0, TEST_W, TEST_H);
+    (*transpose)(src, out0, TEST_W, TEST_H);
     clock_gettime(CLOCK_REALTIME, &end);
-    printf("sse prefetch: \t %ld us\n", diff_in_us(start, end));
-#elif defined SSE
-    clock_gettime(CLOCK_REALTIME, &start);
-    sse_transpose(src, out0, TEST_W, TEST_H);
-    clock_gettime(CLOCK_REALTIME, &end);
-    printf("sse: \t\t %ld us\n", diff_in_us(start, end));
-#elif defined NAI
-    clock_gettime(CLOCK_REALTIME, &start);
-    naive_transpose(src, out0, TEST_W, TEST_H);
-    clock_gettime(CLOCK_REALTIME, &end);
-    printf("naive: \t\t %ld us\n", diff_in_us(start, end));
-#endif
+    printf("Execute time: \t\t %ld us\n", diff_in_us(start, end));
     free(src);
     free(out0);
 
