@@ -94,8 +94,8 @@ int main(int argc, char **argv)
         printf("\n");
     }
     printf("\n");
-    sse_transpose_256(testin, testout, n, n);
-    printf("sse_transpose_256 : ");
+    avx_transpose(testin, testout, n, n);
+    printf("AVX_transpose : ");
     if ( memcmp( testout, expected, n * n * sizeof(int)) == 0)
         printf("correct\n");
     else

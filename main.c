@@ -5,7 +5,8 @@
 #include <string.h>
 #include <assert.h>
 
-#include <xmmintrin.h>
+//#include <xmmintrin.h>
+#include <immintrin.h>
 
 #define TEST_W 4096
 #define TEST_H 4096
@@ -45,6 +46,8 @@ int main(int argc, char **argv)
         transpose = &sse_prefetch_transpose;
     else if (argc > 1 && strcmp(argv[1], "SSE") == 0)
         transpose = &sse_transpose;
+    else if (argc > 1 && strcmp(argv[1], "AVX") == 0)
+        transpose = &avx_transpose;
     else
         transpose = &naive_transpose;
 
